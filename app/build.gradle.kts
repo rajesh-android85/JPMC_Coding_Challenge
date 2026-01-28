@@ -1,0 +1,85 @@
+import java.util.Properties
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+}
+
+val localProperties = Properties()
+val localFile = rootProject.file("local.properties")
+if (localFile.exists()) {
+    localProperties.load(localFile.inputStream())
+}
+
+android {
+    namespace = "com.example.jpmccodingchallenge"
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = "com.example.jpmccodingchallenge"
+        minSdk = 28
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // BuildConfig API key
+        val weatherApiKey = localProperties.getProperty("WEATHER_API_KEY") ?: ""
+        buildConfigField("String", "WEATHER_API_KEY", "\"$weatherApiKey\"")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            // You can override key for debug if needed
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation(libs.navigation.compose)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.play.services.location)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+}
