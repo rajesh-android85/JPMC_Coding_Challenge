@@ -1,16 +1,8 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
-}
-
-val localProperties = Properties()
-val localFile = rootProject.file("local.properties")
-if (localFile.exists()) {
-    localProperties.load(localFile.inputStream())
 }
 
 android {
@@ -25,9 +17,11 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // BuildConfig API key
-        val weatherApiKey = localProperties.getProperty("WEATHER_API_KEY") ?: ""
-        buildConfigField("String", "WEATHER_API_KEY", "\"$weatherApiKey\"")
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            "\"b9b30c3c2145bfca933081ca5b868366\""
+        )
     }
 
     buildTypes {
@@ -38,9 +32,7 @@ android {
                 "proguard-rules.pro"
             )
         }
-        debug {
-            // You can override key for debug if needed
-        }
+
     }
 
     compileOptions {
@@ -48,13 +40,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-
     buildFeatures {
         compose = true
         buildConfig = true
     }
-
-
 }
 
 dependencies {
