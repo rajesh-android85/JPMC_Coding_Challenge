@@ -6,6 +6,7 @@ import com.example.jpmccodingchallenge.model.CurrentWeatherData
 import com.example.jpmccodingchallenge.model.Weather
 import com.example.jpmccodingchallenge.model.WindDetailsData
 import com.example.jpmccodingchallenge.domain.WeatherRepository
+import com.example.jpmccodingchallenge.model.WeatherDetailsData
 import jakarta.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
@@ -31,10 +32,9 @@ class WeatherRepositoryImpl @Inject constructor(
                 ),
                 cityName = body.cityName,
                 sys = CountryDetailsData(body.sys.country),
-                wind = WindDetailsData(body.wind.speed)
+                wind = WindDetailsData(body.wind.speed),
+                weather = WeatherDetailsData(body.weather.get(0).icon)
             )
-
-
         } else {
             throw RuntimeException("API Error: ${response.code()} ${response.message()}")
         }

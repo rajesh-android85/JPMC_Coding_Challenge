@@ -9,7 +9,12 @@ data class Weather(
     val main: CurrentWeatherData,
     val cityName: String,
     val sys: CountryDetailsData,
-    val wind: WindDetailsData
+    val wind: WindDetailsData,
+    val weather: WeatherDetailsData
+)
+
+data class WeatherDetailsData(
+    val icon: String
 )
 
 data class WindDetailsData(

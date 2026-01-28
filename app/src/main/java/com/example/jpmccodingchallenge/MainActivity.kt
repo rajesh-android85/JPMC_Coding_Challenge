@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.activity.viewModels
-import com.example.jpmccodingchallenge.model.AppIntent
 import com.example.jpmccodingchallenge.ui.theme.JPMCCodingChallengTheme
 import com.example.jpmccodingchallenge.ui.view.ErrorMessageView
 import com.example.jpmccodingchallenge.ui.view.WeatherTableView
@@ -39,7 +38,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             JPMCCodingChallengTheme {
-                var country by remember { mutableStateOf("") }
+                val country by viewModel.country.collectAsStateWithLifecycle()
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
                 Scaffold(
@@ -54,9 +53,9 @@ class MainActivity : ComponentActivity() {
 
                         CountryInputView(
                             country = country,
-                            onCountryChange = { country = it },
+                            onCountryChange = { viewModel.updateCountry(it)  },
                             onSearchClick = {
-                                viewModel.processIntent(AppIntent.FetchLatLng(country))
+                                viewModel.fetchLocation(country)
                             }
                         )
 
@@ -120,11 +119,11 @@ class MainActivity : ComponentActivity() {
                 location?.let {
                     val lat = it.latitude
                     val lng = it.longitude
-                    viewModel.processIntent(AppIntent.LoadWeather)
+                    viewModel.loadWeather()
                 }
             }
             .addOnFailureListener {
-                viewModel.processIntent(AppIntent.LoadWeather)
+                viewModel.loadWeather()
             }
     }
 }

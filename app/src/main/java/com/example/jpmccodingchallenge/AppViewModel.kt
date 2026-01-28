@@ -3,7 +3,6 @@ package com.example.jpmccodingchallenge
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jpmccodingchallenge.model.AppIntent
 import com.example.jpmccodingchallenge.model.AppState
 import com.example.jpmccodingchallenge.domain.GetLocationUseCase
 import com.example.jpmccodingchallenge.domain.GetWeatherUseCase
@@ -25,35 +24,37 @@ class AppViewModel @Inject constructor (
     private val _state = MutableStateFlow(AppState())
     val state = _state.asStateFlow()
 
-    fun processIntent(intent: AppIntent) {
-        when (intent) {
-            is AppIntent.FetchLatLng -> fetchLocation(intent.country)
-            is AppIntent.LoadWeather -> loadWeather()
+    private val _country = MutableStateFlow("")
+    val country = _country.asStateFlow()
 
-        }
+    fun updateCountry(countryName:String){
+        _country.value = countryName
     }
 
+
     @SuppressLint("MissingPermission")
-    private fun loadWeather() {
+    fun loadWeather() {
         viewModelScope.launch {
             _state.value = AppState(isLoadingWeather =  true)
-            locationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let {
-                    fetchWeather(it.latitude, it.longitude)
-                } ?: run {
-                    _state.value = AppState(weatherError = "Location not found")
+            if (_country.value.trim().isNotEmpty()){
+                fetchLocation(_country.value.trim())
+            } else {
+                locationClient.lastLocation.addOnSuccessListener { location ->
+                    location?.let {
+                        fetchWeather(it.latitude, it.longitude)
+                    } ?: run {
+                        _state.value = AppState(weatherError = "Location not found")
+                    }
                 }
             }
         }
     }
 
 
-    private fun fetchLocation(country: String) {
+    fun fetchLocation(country: String) {
         viewModelScope.launch {
             _state.value = AppState(isLoadingLocation = true)
-
             val result = useCase(country)
-
             if (result != null) {
                 fetchWeather(result.latitude, result.longitude)
             } else {
@@ -62,7 +63,7 @@ class AppViewModel @Inject constructor (
         }
     }
 
-    private fun fetchWeather(lat: Double, lon: Double) {
+    fun fetchWeather(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
                 val weather = getWeatherUseCase(lat, lon)
