@@ -75,6 +75,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.bundles.test.suite)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.arch.core.testing)
 
 
 }
