@@ -1,12 +1,17 @@
+package com.example.jpmccodingchallenge.ui.view
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.jpmccodingchallenge.R
+
 
 @Composable
 fun CountryInputView(
@@ -23,7 +28,7 @@ fun CountryInputView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Enter one of the following:\nCountry or City, or ZIP code",
+            text = stringResource(R.string.label_input_view_title),
             color = Color.Black,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -38,7 +43,7 @@ fun CountryInputView(
                 onCountryChange(it)
                 if (it.isNotEmpty()) errorMessage = ""
             },
-            label = { Text("Enter country/city/zipcode") },
+            label = { Text(text=stringResource(R.string.label_input_view_hint)) },
             singleLine = true,
             isError = errorMessage.isNotEmpty()
         )
@@ -64,7 +69,7 @@ fun CountryInputView(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Find weather")
+            Text(stringResource(R.string.label_find_weather))
         }
     }
 }

@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">JPMC Coding Challeng</string>
+
+    <string name="error_location_not_found">Location not found</string>
+    <string name="label_country">Country</string>
+    <string name="label_city">City</string>
+    <string name="label_temperature">Temperature</string>
+    <string name="label_feels_like">Feels Like</string>
+    <string name="label_min_temp">Min Temp</string>
+    <string name="label_max_temp">Max Temp</string>
+    <string name="label_humidity">Humidity</string>
+    <string name="label_wind">Wind</string>
+    <string name="label_input_view_title">Enter one of the following:Country or City, or ZIP code</string>
+    <string name="label_input_view_hint">Enter country/city/zipcode</string>
+    <string name="label_find_weather">Find weather</string>
+
 </resources>

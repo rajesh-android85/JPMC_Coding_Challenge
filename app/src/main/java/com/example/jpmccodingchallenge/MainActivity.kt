@@ -1,6 +1,6 @@
 package com.example.jpmccodingchallenge
 
-import CountryInputView
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.activity.viewModels
+import androidx.compose.ui.res.stringResource
 import com.example.jpmccodingchallenge.ui.theme.JPMCCodingChallengTheme
+import com.example.jpmccodingchallenge.ui.view.CountryInputView
 import com.example.jpmccodingchallenge.ui.view.ErrorMessageView
 import com.example.jpmccodingchallenge.ui.view.WeatherTableView
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
                 Scaffold(
-                    topBar = { TopAppBar(title = { Text("JPMC Coding Challenge") }) }
+                    topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) }
                 ) { padding ->
                     Column(
                         modifier = Modifier
@@ -80,7 +82,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             state.location != null -> {
-                                ErrorMessageView("Location not found")
+                                ErrorMessageView(stringResource(R.string.error_location_not_found))
                             }
 
                             state.weather != null -> {
@@ -114,11 +116,8 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("MissingPermission")
     private fun getCurrentLocation() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
-                    val lat = it.latitude
-                    val lng = it.longitude
                     viewModel.loadWeather()
                 }
             }
