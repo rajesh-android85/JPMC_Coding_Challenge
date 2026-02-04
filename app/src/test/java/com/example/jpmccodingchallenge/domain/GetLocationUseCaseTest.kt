@@ -3,6 +3,7 @@ package com.example.jpmccodingchallenge.domain
 import com.example.jpmccodingchallenge.model.LocationData
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -25,7 +26,7 @@ class GetLocationUseCaseTest {
     @Test
     fun getLatLngPositiveTest() = runTest {
         val country = "USA"
-        val expectedLocation = LocationData(latitude = 37.7749, longitude = -122.4194)
+        val expectedLocation = Result.success(LocationData(latitude = 37.7749, longitude = -122.4194))
         whenever(repository.getLatLng(country)).thenReturn(expectedLocation)
         val result = getLocationUseCase(country)
         assertEquals(expectedLocation, result)
@@ -33,9 +34,11 @@ class GetLocationUseCaseTest {
 
     @Test
     fun getLatLngNegativeTest() = runTest {
-        val country = "Unknown"
-        whenever(repository.getLatLng(country)).thenReturn(null)
+        val country = ""
+        val exception = Exception("Country not found")
+        whenever(repository.getLatLng("")).thenReturn(Result.failure(exception))
         val result = getLocationUseCase(country)
-        assertNull(result)
+        assertTrue(result.isFailure)
+        assertEquals("Country not found", result.exceptionOrNull()?.message)
     }
 }

@@ -4,9 +4,9 @@ import com.example.jpmccodingchallenge.model.LocationData
 import com.example.jpmccodingchallenge.model.Weather
 
 interface LocationRepository {
-    suspend fun getLatLng(countryName: String): LocationData?
+    suspend fun getLatLng(countryName: String): Result<LocationData?>
 }
 
 interface WeatherRepository {
-    suspend fun getWeather(lat: Double, lon: Double): Weather
+    suspend fun getWeather(lat: Double, lon: Double): Result<Weather>
 }

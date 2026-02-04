@@ -6,7 +6,7 @@ import jakarta.inject.Inject
 class GetWeatherUseCase @Inject constructor(
     private val repository: WeatherRepository
 ) {
-    suspend operator fun invoke(lat: Double, lon: Double): Weather {
+    suspend operator fun invoke(lat: Double, lon: Double): Result<Weather> {
         return repository.getWeather(lat, lon)
     }
 }

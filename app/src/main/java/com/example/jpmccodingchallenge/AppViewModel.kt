@@ -1,6 +1,7 @@
 package com.example.jpmccodingchallenge
 
 import android.annotation.SuppressLint
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jpmccodingchallenge.model.AppState
@@ -12,10 +13,13 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 
 @HiltViewModel
-class AppViewModel @Inject constructor (
+class AppViewModel @Inject constructor(
     private val useCase: GetLocationUseCase,
     private val getWeatherUseCase: GetWeatherUseCase,
     private val locationClient: FusedLocationProviderClient
@@ -27,7 +31,7 @@ class AppViewModel @Inject constructor (
     private val _country = MutableStateFlow("")
     val country = _country.asStateFlow()
 
-    fun updateCountry(countryName:String){
+    fun updateCountry(countryName: String) {
         _country.value = countryName
     }
 
@@ -35,42 +39,45 @@ class AppViewModel @Inject constructor (
     @SuppressLint("MissingPermission")
     fun loadWeather() {
         viewModelScope.launch {
-            _state.value = AppState(isLoadingWeather =  true)
-            if (_country.value.trim().isNotEmpty()){
+            _state.value = AppState(isLoadingWeather = true)
+            if (_country.value.trim().isNotEmpty()) {
                 fetchLocation(_country.value.trim())
             } else {
-                locationClient.lastLocation.addOnSuccessListener { location ->
-                    location?.let {
-                        fetchWeather(it.latitude, it.longitude)
-                    } ?: run {
-                        _state.value = AppState(weatherError = "Location not found")
-                    }
+                val location = getLastKnownLocation()
+                fetchWeather(location.latitude, location.longitude)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private suspend fun getLastKnownLocation(): Location =
+        suspendCancellableCoroutine { cont ->
+            locationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) cont.resume(location)
+                    else cont.resumeWithException(Exception("Location not found"))
                 }
-            }
+                .addOnFailureListener {
+                    cont.resumeWithException(it)
+                }
+        }
+
+
+    suspend fun fetchLocation(country: String) {
+        _state.value = AppState(isLoadingLocation = true)
+        useCase(country).onSuccess {
+            fetchWeather(it?.latitude ?: 0.0, it?.longitude ?: 0.0)
+        }.onFailure {
+            _state.value = AppState(locationError = "Location not found")
         }
     }
 
-
-    fun fetchLocation(country: String) {
-        viewModelScope.launch {
-            _state.value = AppState(isLoadingLocation = true)
-            val result = useCase(country)
-            if (result != null) {
-                fetchWeather(result.latitude, result.longitude)
-            } else {
-                _state.value = AppState(locationError = "Location not found")
-            }
-        }
-    }
-
-    fun fetchWeather(lat: Double, lon: Double) {
-        viewModelScope.launch {
-            try {
-                val weather = getWeatherUseCase(lat, lon)
-                _state.value = AppState(weather = weather)
-            } catch (e: Exception) {
-                _state.value = AppState(weatherError = e.message)
-            }
+    suspend fun fetchWeather(lat: Double, lon: Double) {
+        val weather = getWeatherUseCase(lat, lon)
+        weather.onSuccess {
+            _state.value = AppState( weather = it)
+        }.onFailure {
+            _state.value = AppState(weatherError = it.message)
         }
     }
 }

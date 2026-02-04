@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                             country = country,
                             onCountryChange = { viewModel.updateCountry(it)  },
                             onSearchClick = {
-                                viewModel.fetchLocation(country)
+                                viewModel.loadWeather()
                             }
                         )
 

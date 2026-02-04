@@ -6,7 +6,7 @@ import jakarta.inject.Inject
 class GetLocationUseCase @Inject constructor(
     private val repository: LocationRepository
 ) {
-    suspend operator fun invoke(country: String): LocationData? {
+    suspend operator fun invoke(country: String): Result<LocationData?> {
         return repository.getLatLng(country)
     }
 }

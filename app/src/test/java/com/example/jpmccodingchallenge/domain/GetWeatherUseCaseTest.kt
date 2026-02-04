@@ -29,7 +29,7 @@ class GetWeatherUseCaseTest {
     fun getWeatherTest() = runTest {
         val lat = 37.7749
         val lon = -122.4194
-        val expectedWeather = Weather(
+        val expectedWeather =  Result.success(Weather(
             main = CurrentWeatherData(
                 temp = 25.0,
                 feelsLike = 25.0,
@@ -40,7 +40,7 @@ class GetWeatherUseCaseTest {
             cityName = "USA",
             sys = CountryDetailsData("USA"),
             wind = WindDetailsData(25.0),
-            weather = WeatherDetailsData("")
+            weather = WeatherDetailsData(""))
         )
 
         whenever(repository.getWeather(lat, lon)).thenReturn(expectedWeather)

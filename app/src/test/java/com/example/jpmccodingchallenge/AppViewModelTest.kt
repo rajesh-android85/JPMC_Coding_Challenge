@@ -50,8 +50,8 @@ class AppViewModelTest {
     fun fetchLocationSuccessScenarioTest() = runTest {
         val location = LocationData(latitude = 12.0, longitude = 77.0)
         val weather = mock(Weather::class.java)
-        `when`(getLocationUseCase.invoke("India")).thenReturn(location)
-        `when`(getWeatherUseCase.invoke(12.0, 77.0)).thenReturn(weather)
+        `when`(getLocationUseCase.invoke("India")).thenReturn(Result.success(location))
+        `when`(getWeatherUseCase.invoke(12.0, 77.0)).thenReturn(Result.success(weather))
         viewModel.fetchLocation("India")
         assertEquals(
             AppState(weather = weather),
@@ -61,7 +61,9 @@ class AppViewModelTest {
 
     @Test
     fun fetchLocationFailureScenarioTest()= runTest {
-        `when`(getLocationUseCase.invoke("Unknown")).thenReturn(null)
+        val exception = Exception("Location not found")
+        `when`(getLocationUseCase.invoke("Unknown"))
+            .thenReturn(Result.failure(exception))
         viewModel.fetchLocation("Unknown")
         assertEquals(
             AppState(locationError = "Location not found"),
@@ -72,7 +74,7 @@ class AppViewModelTest {
     @Test
     fun fetchWeatherSuccessScenarioTest() = runTest {
         val weather = mock(Weather::class.java)
-        `when`(getWeatherUseCase.invoke(10.0, 20.0)).thenReturn(weather)
+        `when`(getWeatherUseCase.invoke(10.0, 20.0)).thenReturn(Result.success(weather))
         viewModel.fetchWeather(10.0, 20.0)
         assertEquals(
             AppState(weather = weather),
@@ -83,7 +85,7 @@ class AppViewModelTest {
     @Test
     fun fetchWeatherFailureScenarioTest() = runTest {
         `when`(getWeatherUseCase.invoke(any(), any()))
-            .thenThrow(RuntimeException("API failure"))
+            .thenReturn(Result.failure(RuntimeException("API failure")))
         viewModel.fetchWeather(10.0, 20.0)
         assertEquals(
             "API failure",
